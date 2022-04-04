@@ -7,7 +7,7 @@ from aws_cdk import aws_s3 as s3
 from aws_cdk import aws_sns as sns
 from aws_cdk import aws_sqs as sqs
 from aws_cdk import aws_ssm as ssm
-from aws_cdk.aws_lambda_event_sources import SqsEventSource
+from aws_cdk.aws_lambda_event_sources import SqsEventSource, SnsEventSource
 from constructs import Construct
 
 PROJECK_NAME = "CollectYouTubeChatApp"
@@ -93,17 +93,17 @@ class CollectYouTubeChatAppStack(Stack):
         sqs_event = SqsEventSource(queue)
         fn.add_event_source(sqs_event)
 
-        topic = sns.Topic(
+        topic_collect = sns.Topic(
             self, build_resource_name("sns", "collect_youtube_chat_topic"),
             topic_name=build_resource_name(
                 "sns", "collect_youtube_chat_topic"),
         )
-        topic.grant_publish(role)
+        topic_collect.grant_publish(role)
         cdk.Tags.of(role).add("service_name", build_resource_name(
             "sns", "collect_youtube_chat_topic"))
         fn.add_environment(
             key="TOPIC_ARN",
-            value=topic.topic_arn
+            value=topic_collect.topic_arn
         )
 
         collect_youtube_api_key = ssm.StringParameter.from_secure_string_parameter_attributes(
@@ -117,6 +117,13 @@ class CollectYouTubeChatAppStack(Stack):
             value=collect_youtube_api_key.parameter_name,
         )
 
-        for resource in [role, fn, bucket, queue, topic]:
+        topic_schedule = sns.Topic.from_topic_arn(
+            self, "sns_youtube_schedule_service_cdk",
+            topic_arn=f"arn:aws:sns:{cdk.Stack.of(self).region}:{cdk.Stack.of(self).account}:sns_youtube_schedule_service_cdk"
+        )
+        sns_event = SnsEventSource(topic_schedule)
+        fn.add_event_source(sns_event)
+
+        for resource in [role, fn, bucket, queue, topic_collect]:
             cdk.Tags.of(resource).add("project", PROJECK_NAME)
             cdk.Tags.of(resource).add("creater", "cdk")
