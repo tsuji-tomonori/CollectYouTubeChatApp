@@ -118,8 +118,8 @@ class CollectYouTubeChatAppStack(Stack):
         )
 
         topic_schedule = sns.Topic.from_topic_arn(
-            self, "sns_youtube_schedule_service_cdk",
-            topic_arn=f"arn:aws:sns:{cdk.Stack.of(self).region}:{cdk.Stack.of(self).account}:sns_youtube_schedule_service_cdk"
+            self, "sns_post_twitter_service_cdk",
+            topic_arn=f"arn:aws:sns:{cdk.Stack.of(self).region}:{cdk.Stack.of(self).account}:sns_post_twitter_service_cdk"
         )
         sns_event = SnsEventSource(topic_schedule)
         fn.add_event_source(sns_event)
