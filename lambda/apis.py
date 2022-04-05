@@ -1,5 +1,6 @@
 import requests
 import logging
+import json
 
 # set logging
 logger = logging.getLogger()
@@ -15,6 +16,9 @@ def get_chat_id(YT_API_KEY: str, video_id: str, kwags: dict = None) -> str:
         params.update(kwags)
     data = requests.get(url, params=params).json()
     logger.debug(data)
+    if len(data["items"]) == 0:
+        raise IndexError(
+            f"list index 0. data is {json.dumps(data, indent=2)}")
     return data["items"][0]["liveStreamingDetails"]["activeLiveChatId"]
 
 
