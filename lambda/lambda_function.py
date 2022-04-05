@@ -32,6 +32,9 @@ def service(event: dict, env: dict):
         if "Sns" in record.keys():
             # SNS の場合
             message = json.loads(record["Sns"]["Message"])
+            if message["status"] != "配信が始まりました":
+                # 配信開始ではない場合(30分前通知の場合)
+                continue
         else:
             # SQS の場合
             message = json.loads(record["body"])
