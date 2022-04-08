@@ -10,4 +10,4 @@ class SnsIoTuple(NamedTuple):
 
 class SnsIo(SnsIoTuple):
     def message(self) -> str:
-        return json.dumps(self._asdict())
+        return json.dumps(self._asdict(), ensure_ascii=False)
