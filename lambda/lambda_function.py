@@ -8,6 +8,7 @@ import os
 from apis import get_chat_data, get_chat_id
 from aws_resource import S3, Sns, Sqs, Ssm
 from sqs_if import SqsIo
+from sns_if import SnsIo
 
 # set logging
 logger = logging.getLogger()
@@ -89,7 +90,11 @@ def service(event: dict, env: dict):
             # 取得が終了した場合
             sns.publish(
                 topick_arn=env["topic_arn"],
-                message=f"チャット欄取得が完了しました!\n{title}",
+                message=SnsIo(
+                    channel_id=channel_id,
+                    video_id=video_id,
+                    title=title,
+                ).message(),
                 subject="チャット欄取得完了通知"
             )
             logger.info(f"[{video_id}] fin collection")
