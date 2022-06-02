@@ -67,12 +67,6 @@ def service(event: dict, env: dict):
                     chat_data, ensure_ascii=False).encode()),
                 bucket_name=env["bucket_name"],
                 file_path=file_path,
-                tags={
-                    "channel_id": channel_id,
-                    "video_id": video_id,
-                    "creater": "sdk",
-                    "project": "CollectYouTubeChatApp",
-                }
             )
             sqs.send(
                 queue_url=env["que_url"],

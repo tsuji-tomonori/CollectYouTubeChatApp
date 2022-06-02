@@ -1,4 +1,5 @@
 .venv/*
 layer/*
-*/__pycache__
+**/__pycache__
 cdk.out/*
+deploy/*
